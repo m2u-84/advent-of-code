@@ -1,0 +1,34 @@
+# Python-specific meta files
+.mypy_cache/
+.sonarlint/
+.vscode/.ropeproject/
+__pycache__/
+/.venv/*
+
+# Temporary and backup files
+*~
+~*
+*.bak
+*.tmp
+
+# OS generated files
+$RECYCLE.BIN/
+._*
+*.lock
+*.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+.fseventd
+.localized
+.TemporaryItems
+[Dd]esktop.ini
+ehthumbs.db
+[Tt]humbs.db
+
+# Explicitly (re-)include Git keep marker files
+!.gitkeep
+
+# Input files
+input.txt
+sample.txt
