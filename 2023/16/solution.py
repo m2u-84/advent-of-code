@@ -3,9 +3,9 @@
 # Disclaimer: This was the first riddle for which I had a little nudge in the
 # right direction. My first implementation was the brute-force approach (which
 # would have run for waaay to long). So while researching whether I maybe
-# misunderstood the instructions (example was a little ambiguous imho) I was
-# spoilered about utilizing LCM. Stopped reading right there and then came up
-# with the solution below.
+# misunderstood the instructions (example was a little ambiguous imho) I ran
+# into a spoiler regarding the use of LCM. Stopped reading right there and then
+# came up with the solution below.
 
 from math import lcm
 from re import compile, fullmatch
