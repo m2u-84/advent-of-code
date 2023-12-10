@@ -1,12 +1,35 @@
 #!/usr/bin/env python3
 
-from enum import Enum
+from enum import auto, Enum
 
 class Direction(Enum):
 	NORTH = (0, -1)
 	EAST = (1, 0)
 	SOUTH = (0, 1)
 	WEST = (-1, 0)
+
+class HandSide(Enum):
+	RIGHT = -1
+	LEFT = 1
+
+turns = {
+	'F': {
+		Direction.NORTH: HandSide.RIGHT,
+		Direction.WEST: HandSide.LEFT
+	},
+	'J': {
+		Direction.EAST: HandSide.LEFT,
+		Direction.SOUTH: HandSide.RIGHT
+	},
+	'7': {
+		Direction.NORTH: HandSide.LEFT,
+		Direction.EAST: HandSide.RIGHT
+	},
+	'L': {
+		Direction.SOUTH: HandSide.LEFT,
+		Direction.WEST: HandSide.RIGHT
+	}
+}
 
 def calculate_move(
 	map: list[str],
@@ -83,6 +106,16 @@ def determine_new_direction(
 		case _:
 			raise ValueError('Not a pipe.')
 
+def count_attached_inside_row_tiles(
+	pipe_map: list[list[int]],
+	position: tuple[int, int],
+	area_hand_side: HandSide
+) -> int:
+	start_x_position = position[0]
+	end_x_position = pipe_map[position[1]][pipe_map[position[1]].index(start_x_position) + area_hand_side.value]
+
+	return start_x_position - end_x_position - 1
+
 connectors = {
 	Direction.NORTH: ['|', 'F', '7'],
 	Direction.EAST: ['-', 'J', '7'],
@@ -91,23 +124,27 @@ connectors = {
 }
 
 rows: list[str] = []
+pipe_positions: list[list[int]] = []
 
 with open('input.txt', 'r') as input_file:
-	rows = input_file.read().splitlines()
+	for row in input_file:
+		rows.append(row.rstrip())
+		pipe_positions.append([])
 
-current_position: tuple[int, int] | None = None
-current_direction: Direction | None = None
+start_position: tuple[int, int] | None = None
+start_direction: Direction | None = None
 
 for y_position, row in enumerate(rows):
 	if (x_position := row.find('S')) != -1:
-		current_position = (x_position, y_position)
+		start_position = (x_position, y_position)
 
 		break
 
-if not current_position:
+if not start_position:
 	raise ValueError('No starting position found.')
 
-next_pipe = 'S'
+current_position = start_position
+start_next_pipe = 'S'
 
 for direction in Direction:
 	new_position = calculate_move(
@@ -122,15 +159,20 @@ for direction in Direction:
 		continue
 
 	if new_pipe in connectors[direction]:
-		current_direction = direction
-		next_pipe = new_pipe
+		start_direction = direction
+		start_next_pipe = new_pipe
 
 		break
 
-if not current_direction:
+if not start_direction:
 	raise ValueError('No connecting pipe found.')
 
-move_count = 1
+current_direction = start_direction
+next_pipe = start_next_pipe
+
+pipe_positions[current_position[1]].append(current_position[0])
+
+turn_hand_side_ratio = 0
 
 while next_pipe != 'S':
 	current_position = calculate_move(
@@ -138,6 +180,8 @@ while next_pipe != 'S':
 		origin = current_position,
 		direction = current_direction
 	)
+
+	pipe_positions[current_position[1]].append(current_position[0])
 
 	current_direction = determine_new_direction(
 		pipe = next_pipe,
@@ -153,6 +197,67 @@ while next_pipe != 'S':
 		)
 	)
 
-	move_count += 1
+	if next_pipe in turns:
+		turn_hand_side_ratio += 1 if turns[next_pipe][current_direction] == HandSide.RIGHT else -1
 
-print(int(move_count / 2))
+for row in pipe_positions:
+	row.sort()
+
+area_hand_side = HandSide.RIGHT if turn_hand_side_ratio > 0 else HandSide.LEFT
+current_position = start_position
+current_direction = start_direction
+next_pipe = start_next_pipe
+inside_tile_count = 0
+
+while next_pipe != 'S':
+	print(current_position, current_direction, next_pipe)
+
+	current_position = calculate_move(
+		map = rows,
+		origin = current_position,
+		direction = current_direction
+	)
+
+	pipe_positions[current_position[1]].append(current_position[0])
+
+	current_direction = determine_new_direction(
+		pipe = next_pipe,
+		last_direction = current_direction
+	)
+
+	next_position = calculate_move(
+		map = rows,
+		origin = current_position,
+		direction = current_direction
+	)
+
+	next_pipe = determine_pipe(
+		map = rows,
+		position = next_position
+	)
+
+	if (
+		(
+			area_hand_side == HandSide.RIGHT
+			and (
+				(next_pipe == 'L' and current_direction == Direction.SOUTH)
+				or (next_pipe == '|' and current_direction == Direction.SOUTH)
+				or (next_pipe == 'F' and current_direction == Direction.WEST)
+			)
+		)
+		or (
+			area_hand_side == HandSide.LEFT
+			and (
+				(next_pipe == '7' and current_direction == Direction.EAST)
+				or (next_pipe == '|' and current_direction == Direction.SOUTH)
+				or (next_pipe == 'J' and current_direction == Direction.SOUTH)
+			)
+		)
+	):
+		inside_tile_count += count_attached_inside_row_tiles(
+			pipe_map = pipe_positions,
+			position = next_position,
+			area_hand_side = area_hand_side
+		)
+
+print(inside_tile_count)
