@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from enum import auto, Enum
+from enum import Enum
 
 class Direction(Enum):
 	NORTH = (0, -1)
