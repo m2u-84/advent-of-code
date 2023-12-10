@@ -1,0 +1,31 @@
+{
+	"editor.rulers": [
+		80,
+		100
+	],
+	"editor.tabSize": 4,
+	"files.encoding": "utf8",
+	"files.eol": "\n",
+	"files.exclude": {
+		"**/.venv": true,
+		"**/.git": true,
+		"**/.mypy_cache": true,
+		"**/__pycache__": true
+	},
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"python.analysis.typeCheckingMode": "strict",
+	"python.defaultInterpreterPath": ".venv\\Scripts\\python.exe",
+	"python.languageServer": "Pylance",
+	"python.terminal.activateEnvInCurrentTerminal": true,
+	"python.terminal.activateEnvironment": true,
+	"[markdown]": {
+		"files.trimTrailingWhitespace": false
+	},
+	"[python]": {
+		"editor.rulers": [
+			79,
+			100
+		]
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"recommendations": [
+		"codezombiech.gitignore",
+		"davidanson.vscode-markdownlint",
+		"editorconfig.editorconfig",
+		"ms-python.vscode-pylance"
+	]
+}
