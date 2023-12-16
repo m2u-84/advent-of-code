@@ -2,7 +2,6 @@
 
 # Needs more optimization with some caching to achieve better runtime results.
 
-from functools import lru_cache
 from re import compile, finditer, fullmatch, Pattern
 from typing import NamedTuple
 
